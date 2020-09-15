@@ -1,0 +1,15 @@
+{
+  "devv": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-react-draw-devv-190020-authRole",
+      "UnauthRoleArn": "arn:aws:iam::572079533646:role/amplify-react-draw-devv-190020-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::572079533646:role/amplify-react-draw-devv-190020-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-react-draw-devv-190020-deployment",
+      "UnauthRoleName": "amplify-react-draw-devv-190020-unauthRole",
+      "StackName": "amplify-react-draw-devv-190020",
+      "StackId": "arn:aws:cloudformation:us-east-1:572079533646:stack/amplify-react-draw-devv-190020/b4794960-f785-11ea-a81f-1208f0f76cbf",
+      "AmplifyAppId": "d25w3ibo85vh58"
+    }
+  }
+}

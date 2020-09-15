@@ -1,0 +1,35 @@
+{
+    "paths": [
+        {
+            "name": "/api/comparison",
+            "lambdaFunction": "arcrestcomparison",
+            "privacy": {
+                "open": true
+            },
+            "policyResourceName": "/api/comparison"
+        }
+    ],
+    "resourceName": "arcrest",
+    "apiName": "arcrest",
+    "functionArns": [
+        {
+            "lambdaFunction": "arcrestcomparison"
+        }
+    ],
+    "privacy": {
+        "auth": 0,
+        "unauth": 0,
+        "authRoleName": "amplify-react-draw-devv-190020-authRole",
+        "unAuthRoleName": "amplify-react-draw-devv-190020-unauthRole"
+    },
+    "dependsOn": [
+        {
+            "category": "function",
+            "resourceName": "arcrestcomparison",
+            "attributes": [
+                "Name",
+                "Arn"
+            ]
+        }
+    ]
+}
