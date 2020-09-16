@@ -69,7 +69,7 @@
         "Timeout": "25",
         "Code": {
           "S3Bucket": "amplify-react-draw-devv-190020-deployment",
-          "S3Key": "amplify-builds/arcrestcomparison-49472f4d4364424d7354-build.zip"
+          "S3Key": "amplify-builds/arcrestcomparison-4f596f79777834655859-build.zip"
         }
       }
     },

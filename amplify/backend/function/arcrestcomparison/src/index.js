@@ -2,9 +2,10 @@ const [RefinanceMorgage, Mortgate, Comparison] = require("./refinance-calculator
 
 exports.handler = async (event) => {
 
-    console.log(" /api/arc/calc received request: " + JSON.stringify(event)) // todo: there must be utils about this
     if (event.body) {
         let body = JSON.parse(event.body)
+
+        console.log("request body: " + event.body)
         let assumed_annual_roi = body['assumed_annual_roi']
 
         let current_principal = body['current_principal']
@@ -17,9 +18,16 @@ exports.handler = async (event) => {
         let other_term_in_months = body['other_term_in_months']
         let other_upfront_cost = body['other_upfront_cost']
 
-        let baseline = new Mortgate(current_principal, current_interest_rate, current_term_in_months, current_upfront_cost)
-        let other = new Mortgate(other_principal, other_interest_rate, other_term_in_months, other_upfront_cost)
-        let comparison = new Comparison(baseline, other, assumed_annual_roi)
+
+        let property_value = body['property_value']
+        let assumed_property_annual_appreciation = body['assumed_property_annual_appreciation']
+        let liquidation_cost_rate = body['liquidation_cost_rate']
+        let assumed_inflation = body['assumed_inflation']
+
+
+        let baseline = new Mortgate(current_principal, current_interest_rate, current_term_in_months, current_upfront_cost, property_value, assumed_property_annual_appreciation, liquidation_cost_rate)
+        let other = new Mortgate(other_principal, other_interest_rate, other_term_in_months, other_upfront_cost, property_value, assumed_property_annual_appreciation, liquidation_cost_rate)
+        let comparison = new Comparison(baseline, other, assumed_annual_roi) // this only returns cash position now, can return, principal, (sell off cash position = net worth)
 
         const response = {
             headers: {
@@ -28,7 +36,7 @@ exports.handler = async (event) => {
                 "Access-Control-Allow-Methods": "OPTIONS,POST,GET"
             },
             statusCode: 200,
-            body: JSON.stringify(comparison.cash_history()),
+            body: JSON.stringify(comparison.projection()),
         };
         return response
     }

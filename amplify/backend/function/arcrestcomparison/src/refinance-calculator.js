@@ -1,7 +1,6 @@
-
-
 var Finance = require('financejs');
 
+const [monthlyMortgagePaymentsWithExtraPayments] = require("./stolen-code.js");
 class RefinanceMorgage {
 
     constructor(principal, interest_rate, term_in_months, current_monthly_payments, current_principal, cash, refinance_fees, assumed_roi, current_remaining_terms_in_months) {
@@ -69,14 +68,26 @@ class RefinanceMorgage {
 
 class Mortgage {
 
-    constructor(principal, interest_rate, term_in_months, upfront_cost) {
+    constructor(principal, interest_rate, term_in_months, upfront_cost, property_value, assumed_property_annual_appreciation, liquidation_cost_rate) {
         this.upfront_cost = upfront_cost
         this.finance = new Finance();
         this.monthly_payment = this.finance.AM(principal, interest_rate, term_in_months, 1)
+        this.mortgage = monthlyMortgagePaymentsWithExtraPayments(
+            {
+                loanAmount: principal,
+                interestRate: interest_rate,
+                termInMonths: term_in_months,
+                extraPaymentAmount: 0
+            }
+        )
         this.principal = principal;
         this.interest_rate = interest_rate
         this.monthly_interest_rate = interest_rate * 1.0 / 12;
         this.term_in_months = term_in_months
+        this.property_value = property_value
+        this.assumed_property_annual_appreciation = assumed_property_annual_appreciation * 1.0 / 100.0
+        this.assumed_property_monthly_appreciation = this.assumed_property_annual_appreciation / 12.0
+        this.liquidation_cost_rate = liquidation_cost_rate * 1.0 / 100.0
     }
 
 
@@ -93,6 +104,18 @@ class Mortgage {
         return ps;
     }
 
+    advanced_payments() {
+
+        let monthly_payments = []
+
+        for (let year of this.mortgage.withExtraPayment.payments) {
+            for (let month of year.monthlyBreakdown) {
+                monthly_payments.push(month)
+            }
+        }
+        return monthly_payments
+    }
+
     summary() {
         let str = "Principal: " + this.principal + "\n" +
             "Interest Rate: " + this.interest_rate + "\n" +
@@ -103,13 +126,24 @@ class Mortgage {
     }
 }
 
+class WealthSnapshot {
+    constructor(cash_position, property_value, principal, liquidation_cost_rate) {
+        this.cash_position = cash_position
+        this.property_value = property_value
+        this.principal = principal
+        this.liquidation_cost_rate = liquidation_cost_rate
+        this.net_worth = this.cash_position + this.property_value * (1 - this.liquidation_cost_rate) - this.principal
+    }
+
+}
+
 class Comparison {
 
     constructor(base_line, other, assumed_annual_roi) {
         this.base_line = base_line
         this.other = other
-        this.assumed_annual_roi = assumed_annual_roi
-        this.assumed_monthly_roi = assumed_annual_roi * 1.0 / 100.0 / 12
+        this.assumed_annual_roi = assumed_annual_roi * 1.0 / 100.0
+        this.assumed_monthly_roi = this.assumed_annual_roi / 12
     }
 
     cash_history() {
@@ -127,8 +161,6 @@ class Comparison {
         let other_cash_history = []
 
         for (let i = 0; i < max_len; i++) {
-            console.log(base_line_cash_position)
-            console.log(other_cash_position)
             base_line_cash_position = base_line_cash_position * (1 + this.assumed_monthly_roi)
             baseline_cash_history.push(base_line_cash_position)
 
@@ -145,6 +177,49 @@ class Comparison {
         return zipped
     }
 
+
+    projection() {
+        let baseline_payments = this.base_line.advanced_payments()
+        let other_payments = this.other.advanced_payments()
+        console.log(baseline_payments.length)
+
+        console.log(other_payments.length)
+        var max_len = Math.max(baseline_payments.length, other_payments.length);
+
+
+        var base_line_cash_position = this.other.upfront_cost - this.base_line.upfront_cost
+        //todo: add property_value to mortgage
+        var baseline_snapshot = new WealthSnapshot(base_line_cash_position, this.base_line.property_value, this.base_line.principal, this.base_line.liquidation_cost_rate)
+
+        var other_cash_position = 0
+        var other_snapshot = new WealthSnapshot(other_cash_position, this.other.property_value, this.other.principal, this.other.liquidation_cost_rate)
+
+        let projection = [[baseline_snapshot, other_snapshot]]
+
+        for (let i = 0; i < max_len; i++) {
+
+            var prev_baseline_snapshot = projection[projection.length - 1][0]
+            var prev_other_snapshot = projection[projection.length - 1][1]
+
+
+            var current_baseline_snapshot = new WealthSnapshot(
+                prev_baseline_snapshot.cash_position * (1 + this.assumed_monthly_roi),
+                prev_baseline_snapshot.property_value * (1 + this.base_line.assumed_property_monthly_appreciation),
+                baseline_payments[i] ? (baseline_payments[i].balance || 0) : 0
+                ,
+                prev_baseline_snapshot.liquidation_cost_rate
+            )
+
+            var current_other_snapshot = new WealthSnapshot(
+                prev_other_snapshot.cash_position * (1 + this.assumed_monthly_roi) + ((baseline_payments[i] ? (baseline_payments[i].monthlyPayment || 0) : 0) - (other_payments[i] ? (other_payments[i].monthlyPayment || 0) : 0)),
+                prev_other_snapshot.property_value * (1 + this.other.assumed_property_monthly_appreciation),
+                other_payments[i] ? (other_payments[i].balance || 0) : 0,
+                prev_other_snapshot.liquidation_cost_rate
+            )
+            projection.push([current_baseline_snapshot, current_other_snapshot])
+        }
+        return projection
+    }
 }
 
 
