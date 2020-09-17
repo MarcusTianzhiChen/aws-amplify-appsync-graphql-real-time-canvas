@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import CanvasJSReact from './canvasjs.react';
 import API, { graphqlOperation } from '@aws-amplify/api';
 //var CanvasJSReact = require('./canvasjs.react');
-import {curveCatmullRom} from 'd3-shape';
-
+import { curveCatmullRom } from 'd3-shape';
+import "antd/dist/antd.css";
+import { Button, InputNumber, Row, Col, PageHeader, version } from "antd";
 var CanvasJS = CanvasJSReact.CanvasJS;
 var CanvasJSChart = CanvasJSReact.CanvasJSChart;
 
@@ -11,19 +12,29 @@ function NumberInput(props) {
 
     var inputValue = null;
     return (
-        <div className={`list-item`}>
-            <h1> {props.title} </h1>
-            <input name="number-input" defaultValue={props.defaultValue} onChange={props.onChange} />
+
+        <div>
+            <Row>
+
+                <Col span={3}></Col>
+                <Col span={6}>{props.title}</Col>
+                <Col span={12}><InputNumber name="number-input" defaultValue={props.defaultValue} onChange={props.onChange} /></Col>
+            </Row>
+
+            {/* 
+        <div>
+            <p> {props.title} </p>
+            <InputNumber name="number-input" defaultValue={props.defaultValue} onChange={props.onChange} /> */}
         </div>
     );
 }
 
 function Submit(props) {
     return (
-        <div className={`list-item`}>
-            <button onClick={props.onClick}>
+        <div>
+            <Button type="primary" onClick={props.onClick}>
                 {props.display}
-            </button>
+            </Button>
         </div>
     );
 }
@@ -161,7 +172,7 @@ export default function UserForms(props) {
         promise.then(snapshots => {
             var baseline_cash_positions = []
             var other_cash_positions = []
-            
+
             for (let i = 0; i < snapshots.length; i++) {
 
                 let baseline_cash_position_datapoint = { y: Math.round(snapshots[i][0].cash_position), label: "month " + i }
@@ -243,7 +254,7 @@ export default function UserForms(props) {
         }).then(snapshots => paintChat(snapshots, "Net Worth Over Time", "Net Worth in USD", "net_worth", setNetWorthChartData))
     }
 
-    function paintChat( snapshots, title, y_title, field_name, set_fn){
+    function paintChat(snapshots, title, y_title, field_name, set_fn) {
 
         var baseline_data = []
         var other_data = []
@@ -289,7 +300,7 @@ export default function UserForms(props) {
     function handleInputChange(fieldName) {
         return (event) => {
             var copy = JSON.parse(JSON.stringify(userNumberInput));
-            copy[fieldName] = event.target.value
+            copy[fieldName] = event
             setUserNumberInput(copy)
         }
     }
@@ -301,39 +312,53 @@ export default function UserForms(props) {
     // let assumed_inflation = body['assumed_inflation']
     return (
         <div>
-            <NumberInput title="Current Principal " onChange={handleInputChange('current_principal')} defaultValue={535300} />
-            <NumberInput title="Current Interest Rate:" onChange={handleInputChange('current_interest_rate')} defaultValue={4} />
-            <NumberInput title="Current Term in Months" onChange={handleInputChange('current_term_in_months')} defaultValue={336} />
-            <br />
-            <NumberInput title="Refinanced Principal" onChange={handleInputChange('other_principal')} defaultValue={540000} />
-            <NumberInput title="Refinanced Interest Rate" onChange={handleInputChange('other_interest_rate')} defaultValue={2.875} />
-            <NumberInput title="Refinanced Term in Months" onChange={handleInputChange('other_term_in_months')} defaultValue={360} />
-            <NumberInput title="Refinance Closing Clost" onChange={handleInputChange('other_upfront_cost')} defaultValue={20000} />
-            <br />
+            <PageHeader
+                // className="site-page-header"
+                onBack={() => null}
+                title="Advanced Refinance Calculator"
+                subTitle="Make Informed decisions"
+                backIcon={null}
+                extra={[
+                    <p >
+                        By Marcus (Tianzhi) Chen
+            </p>,
+                ]}
+            />Ï
+            <div class="center">
+                <NumberInput title="Current Principal " onChange={handleInputChange('current_principal')} defaultValue={535300} />
+                <NumberInput title="Current Interest Rate:" onChange={handleInputChange('current_interest_rate')} defaultValue={4} />
+                <NumberInput title="Current Term in Months" onChange={handleInputChange('current_term_in_months')} defaultValue={336} />
+                <br />
+                <NumberInput title="Refinanced Principal" onChange={handleInputChange('other_principal')} defaultValue={540000} />
+                <NumberInput title="Refinanced Interest Rate" onChange={handleInputChange('other_interest_rate')} defaultValue={2.875} />
+                <NumberInput title="Refinanced Term in Months" onChange={handleInputChange('other_term_in_months')} defaultValue={360} />
+                <NumberInput title="Refinance Closing Clost" onChange={handleInputChange('other_upfront_cost')} defaultValue={20000} />
+                <br />
 
-            <NumberInput title="Property Value" onChange={handleInputChange('property_value')} defaultValue={675000} />
-            <NumberInput title="Assumed Property Annual Appreciation" onChange={handleInputChange('assumed_property_annual_appreciation')} defaultValue={5} />
+                <NumberInput title="Property Value" onChange={handleInputChange('property_value')} defaultValue={675000} />
+                <NumberInput title="Assumed Property Annual Appreciation" onChange={handleInputChange('assumed_property_annual_appreciation')} defaultValue={5} />
 
-            <br />
-            <NumberInput title="Hypothetical Annual Return on Investments" onChange={handleInputChange('assumed_annual_roi')} defaultValue={7} />
+                <br />
+                <NumberInput title="Hypothetical Annual Return on Investments" onChange={handleInputChange('assumed_annual_roi')} defaultValue={7} />
 
-            <NumberInput title="Hypothetical Inflation" onChange={handleInputChange('assumed_inflation')} defaultValue={2} />
+                <NumberInput title="Hypothetical Inflation" onChange={handleInputChange('assumed_inflation')} defaultValue={2} />
 
-            <p> Assumption 1: The Upfront Cost for Refinance is invested with the Hypothetical anuual return. </p>
-            <p> Assumption 2: The current Mortgage is treated as based line. If monthly payments can be reduced by the refinance, the saved amount is invested. </p>
-            <Submit display="Submit" onClick={() => submitUserInput()} />
+                <p> Assumption 1: The Upfront Cost for Refinance is invested with the Hypothetical anuual return. </p>
+                <p> Assumption 2: The current Mortgage is treated as based line. If monthly payments can be reduced by the refinance, the saved amount is invested. </p>
+                <Submit display="Submit" onClick={() => submitUserInput()} />
 
-            <div>
-                <CanvasJSChart options={cashPositionChartData} />
+                <div>
+                    <CanvasJSChart options={cashPositionChartData} />
+                </div>
+
+
+                {/* <p> {display}</p> */}
+                <div>
+                    <CanvasJSChart options={principalChartData} />
+                </div>
+
+                <CanvasJSChart options={netWorthChartData} />
             </div>
-
-
-            {/* <p> {display}</p> */}
-            <div>
-                <CanvasJSChart options={principalChartData} />
-            </div>
-
-            <CanvasJSChart options={netWorthChartData} />
         </div>
 
     );

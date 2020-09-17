@@ -1,8 +1,8 @@
-:root {
+/* :root {
   --yellow: #ffc600;
   --black: #272727;
-}
-
+} */
+/* 
 html {
   font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif,
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
@@ -35,4 +35,10 @@ p {
 
 input[type=number] {
   width: 50px;
+} */
+
+.center {
+  margin: auto;
+  width: 60%;
+  padding: 10px;
 }
