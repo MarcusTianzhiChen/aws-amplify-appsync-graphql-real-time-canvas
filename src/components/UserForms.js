@@ -13,12 +13,10 @@ function NumberInput(props) {
     var inputValue = null;
     return (
 
-        <div>
+        <div >
             <Row>
-
-                <Col span={3}></Col>
-                <Col span={6}>{props.title}</Col>
-                <Col span={12}><InputNumber name="number-input" defaultValue={props.defaultValue} onChange={props.onChange} /></Col>
+                <Col span={8}>{props.title}</Col>
+                <Col span={4}><InputNumber name="number-input" defaultValue={props.defaultValue} onChange={props.onChange} /></Col>
             </Row>
 
             {/* 
@@ -31,11 +29,9 @@ function NumberInput(props) {
 
 function Submit(props) {
     return (
-        <div>
-            <Button type="primary" onClick={props.onClick}>
-                {props.display}
-            </Button>
-        </div>
+        <Button type="primary" onClick={props.onClick}>
+            {props.display}
+        </Button>
     );
 }
 
@@ -320,14 +316,14 @@ export default function UserForms(props) {
                 backIcon={null}
                 extra={[
                     <p >
-                        By Marcus (Tianzhi) Chen
+                        Email: Burgess.Chen.Tz@gmail.com
             </p>,
                 ]}
-            />Ï
+            />
             <div class="center">
                 <NumberInput title="Current Principal " onChange={handleInputChange('current_principal')} defaultValue={535300} />
-                <NumberInput title="Current Interest Rate:" onChange={handleInputChange('current_interest_rate')} defaultValue={4} />
-                <NumberInput title="Current Term in Months" onChange={handleInputChange('current_term_in_months')} defaultValue={336} />
+                <NumberInput title="Current Interest Rate " onChange={handleInputChange('current_interest_rate')} defaultValue={4} />
+                <NumberInput title="Current Term in Months " onChange={handleInputChange('current_term_in_months')} defaultValue={336} />
                 <br />
                 <NumberInput title="Refinanced Principal" onChange={handleInputChange('other_principal')} defaultValue={540000} />
                 <NumberInput title="Refinanced Interest Rate" onChange={handleInputChange('other_interest_rate')} defaultValue={2.875} />
@@ -339,25 +335,34 @@ export default function UserForms(props) {
                 <NumberInput title="Assumed Property Annual Appreciation" onChange={handleInputChange('assumed_property_annual_appreciation')} defaultValue={5} />
 
                 <br />
-                <NumberInput title="Hypothetical Annual Return on Investments" onChange={handleInputChange('assumed_annual_roi')} defaultValue={7} />
+                <NumberInput title="Assumed Annual Return on Investments" onChange={handleInputChange('assumed_annual_roi')} defaultValue={7} />
 
-                <NumberInput title="Hypothetical Inflation" onChange={handleInputChange('assumed_inflation')} defaultValue={2} />
-
-                <p> Assumption 1: The Upfront Cost for Refinance is invested with the Hypothetical anuual return. </p>
-                <p> Assumption 2: The current Mortgage is treated as based line. If monthly payments can be reduced by the refinance, the saved amount is invested. </p>
-                <Submit display="Submit" onClick={() => submitUserInput()} />
-
+                <NumberInput title="Assumed Inflation" onChange={handleInputChange('assumed_inflation')} defaultValue={2} />
                 <div>
-                    <CanvasJSChart options={cashPositionChartData} />
+                    <Submit display="Submit" onClick={() => submitUserInput()} />
                 </div>
 
+                <br />
+                <h2> Assumptions: </h2>
+                <p>  - If choose not to refinance, the Refinance Closing Clost is invested with the Assumed Anuual Return of {userNumberInput['assumed_annual_roi']}%. </p>
+                <p>  - The current Mortgage is treated as based line. If monthly payments can be reduced by the refinance, the saved amount is invested, also with he Assumed Anuual Return of {userNumberInput['assumed_annual_roi']}%. </p>
 
-                {/* <p> {display}</p> */}
+                <br />
+                <div >
+                    <CanvasJSChart options={cashPositionChartData} />
+                </div>
+                <p> Cash Position Over Time: If you are making less monthly payment, and invest the saved amount. </p>
+
+
                 <div>
                     <CanvasJSChart options={principalChartData} />
                 </div>
 
+                <p> Balance Over Time: The amount of balance you own the bank/lender.  </p>
+
                 <CanvasJSChart options={netWorthChartData} />
+                <p> Net Worth Over Time: Net Worth = Cash + House Value - Balance. This reflect your overall wealth if you decide to sell your house. A 3% selling cost is assumed.  </p>
+
             </div>
         </div>
 
