@@ -16,22 +16,22 @@ const [monthlyMortgagePaymentsWithExtraPayments] = require("./stolen-code.js");
 
 test("just to print", () => {
 
-    myMortgage = new Mortgate(535384, 4, 344, 0, 675000, 5, 3)
-    console.log(myMortgage.summary())
+    // myMortgage = new Mortgate(535384, 4, 344, 0, 675000, 5, 3)
+    // console.log(myMortgage.summary())
 
-    newMorgage = new Mortgate(540000, 2.875, 360, 20000, 675000, 5, 3)
-    console.log(newMorgage.summary())
+    // newMorgage = new Mortgate(540000, 2.875, 360, 20000, 675000, 5, 3)
+    // console.log(newMorgage.summary())
 
-    console.log((new Comparison(myMortgage, newMorgage, 7)).projection())
+    // console.log((new Comparison(myMortgage, newMorgage, 7)).projection())
 
-    // console.log(JSON.stringify(monthlyMortgagePaymentsWithExtraPayments(
+    console.log(JSON.stringify(monthlyMortgagePaymentsWithExtraPayments(
 
-    //     {
-    //         loanAmount: 540000,
-    //         interestRate: 2.875,
-    //         termInMonths: 360,
-    //         extraPaymentAmount: 0
-    //     }
-    // )))
+        {
+            loanAmount: 540000,
+            interestRate: 2.875,
+            termInMonths: 360,
+            extraPaymentAmount: 0
+        }
+    )))
 
 });

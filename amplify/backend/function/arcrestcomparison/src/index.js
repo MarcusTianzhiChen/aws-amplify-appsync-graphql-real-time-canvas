@@ -36,7 +36,19 @@ exports.handler = async (event) => {
                 "Access-Control-Allow-Methods": "OPTIONS,POST,GET"
             },
             statusCode: 200,
-            body: JSON.stringify(comparison.projection()),
+            body: JSON.stringify(
+                {
+                    current: {
+                        monthlyPayment: baseline.mortgage.withExtraPayment.totalMonthlyPayment,
+                        overallPayment: baseline.mortgage.withExtraPayment.totalCost
+                    },
+                    refinance: {
+
+                        monthlyPayment: other.mortgage.withExtraPayment.totalMonthlyPayment,
+                        overallPayment: other.mortgage.withExtraPayment.totalCost
+                    },
+                    projection: comparison.projection()
+                }),
         };
         return response
     }

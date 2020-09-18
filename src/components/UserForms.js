@@ -38,7 +38,6 @@ function Submit(props) {
 
 export default function UserForms(props) {
 
-
     const [userNumberInput, setUserNumberInput] = useState({
         current_principal: 535300,
         current_interest_rate: 4,
@@ -57,7 +56,7 @@ export default function UserForms(props) {
 
     });
 
-    const [display, setDisplay] = useState("null");
+    const [displayReport, setDisplayReport] = useState(false);
     const [cashPositionChartData, setCashPositionChartData] = useState({
         animationEnabled: true,
         title: {
@@ -132,6 +131,11 @@ export default function UserForms(props) {
         }]
     });
 
+
+    const [current, setCurrent] = useState({ monthlyPayment: 0, overallPayment: 0 });
+
+    const [refinanced, setRefinanced] = useState({ monthlyPayment: 0, overallPayment: 0 });
+
     function submitUserInput() {
 
 
@@ -165,9 +169,15 @@ export default function UserForms(props) {
         // todo: use API.post instead
 
         let promise = fetch("https://b275xg70y5.execute-api.us-east-1.amazonaws.com/devv/api/comparison", requestOptions).then(r => r.json())
-        promise.then(snapshots => {
+        promise.then(data => {
+
+
+            setCurrent(data.current)
+            setRefinanced(data.refinance)
+
             var baseline_cash_positions = []
             var other_cash_positions = []
+            let snapshots = data.projection
 
             for (let i = 0; i < snapshots.length; i++) {
 
@@ -247,7 +257,15 @@ export default function UserForms(props) {
             setPrincipalChartData(principalOptions)
             return snapshots
 
-        }).then(snapshots => paintChat(snapshots, "Net Worth Over Time", "Net Worth in USD", "net_worth", setNetWorthChartData))
+        }).then(snapshots => {
+
+            paintChat(snapshots, "Net Worth Over Time", "Net Worth in USD", "net_worth", setNetWorthChartData)
+            return snapshots
+        }).then(
+
+            setDisplayReport(true)
+
+        )
     }
 
     function paintChat(snapshots, title, y_title, field_name, set_fn) {
@@ -342,27 +360,37 @@ export default function UserForms(props) {
                     <Submit display="Submit" onClick={() => submitUserInput()} />
                 </div>
 
-                <br />
-                <h2> Assumptions: </h2>
-                <p>  - If choose not to refinance, the Refinance Closing Clost is invested with the Assumed Anuual Return of {userNumberInput['assumed_annual_roi']}%. </p>
-                <p>  - The current Mortgage is treated as based line. If monthly payments can be reduced by the refinance, the saved amount is invested, also with he Assumed Anuual Return of {userNumberInput['assumed_annual_roi']}%. </p>
+                <div style={{ display: displayReport ? "block" : "none" }}>
+                    <br />
+                    <h2> Current Mortgage </h2>
+                    <p>  Monthly payment: {current.monthlyPayment} </p>
+                    <p>  Total payment: {current.overallPayment}  </p>
 
-                <br />
-                <div >
-                    <CanvasJSChart options={cashPositionChartData} />
+                    <h2> Refinanced Mortgage </h2>
+                    <p>  Monthly payment: {refinanced.monthlyPayment} </p>
+                    <p>  Total payment: {refinanced.overallPayment}  </p>
+
+                    <br />
+                    <h2> Assumptions: </h2>
+                    <p>  - If choose not to refinance, the Refinance Closing Clost is invested with the Assumed Anuual Return of {userNumberInput['assumed_annual_roi']}%. </p>
+                    <p>  - The current Mortgage is treated as based line. If monthly payments can be reduced by the refinance, the saved amount is invested, also with he Assumed Anuual Return of {userNumberInput['assumed_annual_roi']}%. </p>
+
+                    <br />
+                    <div >
+                        <CanvasJSChart options={cashPositionChartData} />
+                    </div>
+                    <p> Cash Position Over Time: If you are making less monthly payment, and invest the saved amount. </p>
+
+
+                    <div>
+                        <CanvasJSChart options={principalChartData} />
+                    </div>
+
+                    <p> Balance Over Time: The amount of balance you own the bank/lender.  </p>
+
+                    <CanvasJSChart options={netWorthChartData} />
+                    <p> Net Worth Over Time: Net Worth = Cash + House Value - Balance. This reflect your overall wealth if you decide to sell your house. A 3% selling cost is assumed.  </p>
                 </div>
-                <p> Cash Position Over Time: If you are making less monthly payment, and invest the saved amount. </p>
-
-
-                <div>
-                    <CanvasJSChart options={principalChartData} />
-                </div>
-
-                <p> Balance Over Time: The amount of balance you own the bank/lender.  </p>
-
-                <CanvasJSChart options={netWorthChartData} />
-                <p> Net Worth Over Time: Net Worth = Cash + House Value - Balance. This reflect your overall wealth if you decide to sell your house. A 3% selling cost is assumed.  </p>
-
             </div>
         </div>
 
