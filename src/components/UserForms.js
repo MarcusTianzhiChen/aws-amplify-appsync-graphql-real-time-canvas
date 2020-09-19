@@ -171,7 +171,6 @@ export default function UserForms(props) {
         let promise = fetch("https://b275xg70y5.execute-api.us-east-1.amazonaws.com/devv/api/comparison", requestOptions).then(r => r.json())
         promise.then(data => {
 
-
             setCurrent(data.current)
             setRefinanced(data.refinance)
 
@@ -379,17 +378,17 @@ export default function UserForms(props) {
                     <div >
                         <CanvasJSChart options={cashPositionChartData} />
                     </div>
-                    <p> Cash Position Over Time: If you are making less monthly payment, and invest the saved amount. </p>
+                    <p> Cash Position Over Time: This is assuming that you can make less monthly payment for mortgage and invest the saved amount with an annual return of  {userNumberInput['assumed_annual_roi']}%</p>
 
 
                     <div>
                         <CanvasJSChart options={principalChartData} />
                     </div>
 
-                    <p> Balance Over Time: The amount of balance you own the bank/lender.  </p>
+                    <p> Balance Over Time: The amount of balance you own the bank or lender.  </p>
 
                     <CanvasJSChart options={netWorthChartData} />
-                    <p> Net Worth Over Time: Net Worth = Cash + House Value - Balance. This reflect your overall wealth if you decide to sell your house. A 3% selling cost is assumed.  </p>
+                    <p> Net Worth Over Time: Net Worth = Cash + House Value - Balance. This reflects your overall wealth if you decide to sell your house. (A 3% selling cost is assumed.) </p>
                 </div>
             </div>
         </div>
