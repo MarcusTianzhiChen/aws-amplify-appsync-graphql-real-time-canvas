@@ -84,10 +84,10 @@ export default function UserForms(props) {
     const [principalChartData, setPrincipalChartData] = useState({
         animationEnabled: true,
         title: {
-            text: "Princial Over Time"
+            text: "Principal Over Time"
         },
         axisY: {
-            title: "Princial"
+            title: "Principal"
         },
         toolTip: {
             shared: true
@@ -231,10 +231,10 @@ export default function UserForms(props) {
             const principalOptions = {
                 animationEnabled: true,
                 title: {
-                    text: "Princial Over Time"
+                    text: "Principal Over Time"
                 },
                 axisY: {
-                    title: "Princial"
+                    title: "Principal"
                 },
                 toolTip: {
                     shared: true
